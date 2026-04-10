@@ -1,0 +1,97 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Talk2Doc — full stack docker-compose
+#
+# Services:
+#   postgres   → primary database
+#   redis      → cache + rate limiting
+#   backend    → FastAPI app
+#   frontend   → React app served by nginx
+#
+# Usage:
+#   cp .env.example .env   # fill in your keys
+#   docker compose up --build
+#   open http://localhost
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── PostgreSQL ─────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-chatbot-postgres}
+      POSTGRES_USER:     ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-chatbot-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [talk2doc]
+
+  # ── Redis ──────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks: [talk2doc]
+
+  # ── FastAPI backend ────────────────────────────────────────────────────────
+  backend:
+    build:
+      context:    ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .venv
+    environment:
+      # Override DATABASE_URL to use the postgres service name
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-chatbot-postgres}
+      REDIS_URL:    redis://redis:6379
+      UPLOAD_DIR:   /app/uploads
+      CHROMA_PATH:  /app/.chroma
+    volumes:
+      - uploads_data:/app/uploads
+      - chroma_data:/app/.chroma
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [talk2doc]
+
+  # ── React frontend (nginx) ─────────────────────────────────────────────────
+  frontend:
+    build:
+      context:    ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks: [talk2doc]
+
+volumes:
+  postgres_data:
+  redis_data:
+  uploads_data:
+  chroma_data:
+
+networks:
+  talk2doc:
+    driver: bridge

@@ -1,0 +1,336 @@
+﻿backend-1  | INFO:     127.0.0.1:45576 - "GET /health HTTP/1.1" 200 OK
+backend-1  | 2026-04-06 02:56:39,640 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-04-06 02:56:39,654 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.username, users.hashed_password, users.is_active, users.is_superuser, users.created_at, users.updated_at 
+backend-1  | FROM users 
+backend-1  | WHERE users.email = $1::VARCHAR OR users.username = $2::VARCHAR
+backend-1  | 2026-04-06 02:56:39,654 INFO sqlalchemy.engine.Engine [generated in 0.00021s] ('user1@gmail.com', 'user1')
+backend-1  | 2026-04-06 02:56:39,943 INFO sqlalchemy.engine.Engine INSERT INTO users (email, username, hashed_password, is_active, is_superuser, created_at, updated_at) VALUES ($1::VARCHAR, $2::VARCHAR, $3::VARCHAR, $4::BOOLEAN, $5::BOOLEAN, $6::TIMESTAMP WITH TIME ZONE, $7::TIMESTAMP WITH TIME ZONE) RETURNING users.id
+backend-1  | 2026-04-06 02:56:39,943 INFO sqlalchemy.engine.Engine [generated in 0.00028s] ('user1@gmail.com', 'user1', '$2b$12$osC9JVEn4EgcqlPY78zRCujMQrS8hFKB3P95JWuXct8J11teiFkpy', True, False, datetime.datetime(2026, 4, 6, 2, 56, 39, 943789, tzinfo=datetime.timezone.utc), datetime.datetime(2026, 4, 6, 2, 56, 39, 943794, tzinfo=datetime.timezone.utc))
+backend-1  | INFO:     172.18.0.5:48934 - "POST /api/v1/auth/register HTTP/1.1" 201 Created
+backend-1  | 2026-04-06 02:56:39,947 INFO sqlalchemy.engine.Engine COMMIT
+backend-1  | 2026-04-06 02:56:39,955 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-04-06 02:56:39,957 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.username, users.hashed_password, users.is_active, users.is_superuser, users.created_at, users.updated_at 
+backend-1  | FROM users 
+backend-1  | WHERE users.id = $1::INTEGER
+backend-1  | 2026-04-06 02:56:39,957 INFO sqlalchemy.engine.Engine [generated in 0.00024s] (1,)
+backend-1  | INFO:     172.18.0.5:48938 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+backend-1  | 2026-04-06 02:56:39,960 INFO sqlalchemy.engine.Engine COMMIT
+backend-1  | 2026-04-06 02:56:40,008 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-04-06 02:56:40,010 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.username, users.hashed_password, users.is_active, users.is_superuser, users.created_at, users.updated_at 
+backend-1  | FROM users 
+backend-1  | WHERE users.id = $1::INTEGER
+backend-1  | 2026-04-06 02:56:40,010 INFO sqlalchemy.engine.Engine [cached since 0.05303s ago] (1,)
+backend-1  | 2026-04-06 02:56:40,016 INFO sqlalchemy.engine.Engine SELECT chat_sessions.id, chat_sessions.user_id, chat_sessions.title, chat_sessions.created_at, chat_sessions.updated_at 
+backend-1  | FROM chat_sessions 
+backend-1  | WHERE chat_sessions.user_id = $1::INTEGER ORDER BY chat_sessions.updated_at DESC
+backend-1  | 2026-04-06 02:56:40,016 INFO sqlalchemy.engine.Engine [generated in 0.00040s] (1,)
+backend-1  | INFO:     172.18.0.5:48952 - "GET /api/v1/chat/sessions HTTP/1.1" 200 OK
+backend-1  | 2026-04-06 02:56:40,058 INFO sqlalchemy.engine.Engine COMMIT
+backend-1  | 2026-04-06 02:56:40,063 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-04-06 02:56:40,063 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.username, users.hashed_password, users.is_active, users.is_superuser, users.created_at, users.updated_at 
+backend-1  | FROM users 
+backend-1  | WHERE users.id = $1::INTEGER
+backend-1  | 2026-04-06 02:56:40,063 INFO sqlalchemy.engine.Engine [cached since 0.1066s ago] (1,)
+backend-1  | 2026-04-06 02:56:40,075 INFO sqlalchemy.engine.Engine SELECT documents.id, documents.user_id, documents.filename, documents.file_path, documents.content_type, documents.size_bytes, documents.status, documents.chunk_count, documents.error_message, documents.created_at, documents.updated_at 
+backend-1  | FROM documents 
+backend-1  | WHERE documents.user_id = $1::INTEGER ORDER BY documents.created_at DESC
+backend-1  | 2026-04-06 02:56:40,075 INFO sqlalchemy.engine.Engine [generated in 0.00041s] (1,)
+backend-1  | INFO:     172.18.0.5:48956 - "GET /api/v1/documents HTTP/1.1" 200 OK
+backend-1  | 2026-04-06 02:56:40,129 INFO sqlalchemy.engine.Engine COMMIT
+backend-1  | 2026-04-06 02:56:45,656 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-04-06 02:56:45,656 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.username, users.hashed_password, users.is_active, users.is_superuser, users.created_at, users.updated_at 
+backend-1  | FROM users 
+backend-1  | WHERE users.id = $1::INTEGER
+backend-1  | 2026-04-06 02:56:45,657 INFO sqlalchemy.engine.Engine [cached since 5.7s ago] (1,)
+backend-1  | 2026-04-06 02:56:45,663 INFO sqlalchemy.engine.Engine INSERT INTO chat_sessions (user_id, title, created_at, updated_at) VALUES ($1::INTEGER, $2::VARCHAR, $3::TIMESTAMP WITH TIME ZONE, $4::TIMESTAMP WITH TIME ZONE) RETURNING chat_sessions.id
+backend-1  | 2026-04-06 02:56:45,663 INFO sqlalchemy.engine.Engine [generated in 0.00069s] (1, 'hello', datetime.datetime(2026, 4, 6, 2, 56, 45, 663081, tzinfo=datetime.timezone.utc), datetime.datetime(2026, 4, 6, 2, 56, 45, 663089, tzinfo=datetime.timezone.utc))
+backend-1  | 2026-04-06 02:56:45,675 INFO sqlalchemy.engine.Engine INSERT INTO messages (session_id, role, content, created_at) VALUES ($1::INTEGER, $2::messagerole, $3::VARCHAR, $4::TIMESTAMP WITH TIME ZONE) RETURNING messages.id
+backend-1  | 2026-04-06 02:56:45,676 INFO sqlalchemy.engine.Engine [generated in 0.00085s] (1, 'user', 'hello', datetime.datetime(2026, 4, 6, 2, 56, 45, 675443, tzinfo=datetime.timezone.utc))
+backend-1  | 2026-04-06 02:56:45,718 INFO sqlalchemy.engine.Engine COMMIT
+backend-1  | 2026-04-06 02:56:45,724 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-04-06 02:56:45,725 INFO sqlalchemy.engine.Engine SELECT messages.id, messages.session_id, messages.role, messages.content, messages.sources, messages.created_at 
+backend-1  | FROM messages 
+backend-1  | WHERE messages.session_id = $1::INTEGER ORDER BY messages.created_at
+backend-1  | 2026-04-06 02:56:45,725 INFO sqlalchemy.engine.Engine [generated in 0.00021s] (1,)
+backend-1  | INFO:     172.18.0.5:35150 - "POST /api/v1/chat/stream HTTP/1.1" 200 OK
+backend-1  | Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+backend-1  | 
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|ΓûêΓûêΓûêΓûêΓûêΓûêΓûêΓûêΓûêΓûê| 103/103 [00:00<00:00, 1204.75it/s]
+backend-1  | [1mBertModel LOAD REPORT[0m from: sentence-transformers/all-MiniLM-L6-v2
+backend-1  | Key                     | Status     |  | 
+backend-1  | ------------------------+------------+--+-
+backend-1  | embeddings.position_ids | UNEXPECTED |  | 
+backend-1  | 
+backend-1  | Notes:
+backend-1  | - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+backend-1  | INFO:     127.0.0.1:47002 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:45790 - "GET /health HTTP/1.1" 200 OK
+backend-1  | 2026-04-06 02:57:05,898 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-04-06 02:57:05,900 INFO sqlalchemy.engine.Engine INSERT INTO messages (session_id, role, content, sources, created_at) VALUES ($1::INTEGER, $2::messagerole, $3::VARCHAR, $4::JSON, $5::TIMESTAMP WITH TIME ZONE) RETURNING messages.id
+backend-1  | 2026-04-06 02:57:05,900 INFO sqlalchemy.engine.Engine [generated in 0.00045s] (1, 'assistant', "Hello. It seems we've started a conversation. I'm here to help with any questions or topics you'd like to discuss. Since there's no specific context provided, I'll be relying on general knowledge to assist you. What's on your mind?", '[]', datetime.datetime(2026, 4, 6, 2, 57, 5, 899853, tzinfo=datetime.timezone.utc))
+backend-1  | 2026-04-06 02:57:05,902 INFO sqlalchemy.engine.Engine COMMIT
+backend-1  | 2026-04-06 02:57:05,909 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-04-06 02:57:05,911 INFO sqlalchemy.engine.Engine SELECT messages.id, messages.session_id, messages.role, messages.content, messages.sources, messages.created_at 
+backend-1  | FROM messages 
+backend-1  | WHERE messages.id = $1::INTEGER
+backend-1  | 2026-04-06 02:57:05,911 INFO sqlalchemy.engine.Engine [generated in 0.00020s] (2,)
+backend-1  | 2026-04-06 02:57:05,913 INFO sqlalchemy.engine.Engine ROLLBACK
+backend-1  | 2026-04-06 02:57:05,915 INFO sqlalchemy.engine.Engine COMMIT
+backend-1  | 2026-04-06 02:57:05,923 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-04-06 02:57:05,924 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.username, users.hashed_password, users.is_active, users.is_superuser, users.created_at, users.updated_at 
+backend-1  | FROM users 
+backend-1  | WHERE users.id = $1::INTEGER
+backend-1  | 2026-04-06 02:57:05,924 INFO sqlalchemy.engine.Engine [cached since 25.97s ago] (1,)
+backend-1  | 2026-04-06 02:57:05,927 INFO sqlalchemy.engine.Engine SELECT chat_sessions.id, chat_sessions.user_id, chat_sessions.title, chat_sessions.created_at, chat_sessions.updated_at 
+backend-1  | FROM chat_sessions 
+backend-1  | WHERE chat_sessions.user_id = $1::INTEGER ORDER BY chat_sessions.updated_at DESC
+backend-1  | 2026-04-06 02:57:05,927 INFO sqlalchemy.engine.Engine [cached since 25.91s ago] (1,)
+backend-1  | INFO:     172.18.0.5:42828 - "GET /api/v1/chat/sessions HTTP/1.1" 200 OK
+backend-1  | 2026-04-06 02:57:05,929 INFO sqlalchemy.engine.Engine COMMIT
+backend-1  | 2026-04-06 02:57:11,123 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-04-06 02:57:11,124 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.username, users.hashed_password, users.is_active, users.is_superuser, users.created_at, users.updated_at 
+backend-1  | FROM users 
+backend-1  | WHERE users.id = $1::INTEGER
+backend-1  | 2026-04-06 02:57:11,124 INFO sqlalchemy.engine.Engine [cached since 31.17s ago] (1,)
+backend-1  | 2026-04-06 02:57:11,138 INFO sqlalchemy.engine.Engine SELECT chat_sessions.id, chat_sessions.user_id, chat_sessions.title, chat_sessions.created_at, chat_sessions.updated_at 
+backend-1  | FROM chat_sessions 
+backend-1  | WHERE chat_sessions.id = $1::INTEGER AND chat_sessions.user_id = $2::INTEGER
+backend-1  | 2026-04-06 02:57:11,138 INFO sqlalchemy.engine.Engine [generated in 0.00036s] (1, 1)
+backend-1  | 2026-04-06 02:57:11,143 INFO sqlalchemy.engine.Engine SELECT chat_sessions.id 
+backend-1  | FROM chat_sessions 
+backend-1  | WHERE chat_sessions.id = $1::INTEGER
+backend-1  | 2026-04-06 02:57:11,143 INFO sqlalchemy.engine.Engine [generated in 0.00029s] (1,)
+backend-1  | 2026-04-06 02:57:11,150 INFO sqlalchemy.engine.Engine SELECT messages.id AS messages_id, messages.session_id AS messages_session_id, messages.role AS messages_role, messages.content AS messages_content, messages.sources AS messages_sources, messages.created_at AS messages_created_at 
+backend-1  | FROM messages 
+backend-1  | WHERE $1::INTEGER = messages.session_id ORDER BY messages.created_at
+backend-1  | 2026-04-06 02:57:11,151 INFO sqlalchemy.engine.Engine [generated in 0.00028s] (1,)
+backend-1  | INFO:     172.18.0.5:55526 - "GET /api/v1/chat/sessions/1 HTTP/1.1" 200 OK
+backend-1  | 2026-04-06 02:57:11,155 INFO sqlalchemy.engine.Engine COMMIT
+backend-1  | 2026-04-06 02:57:12,145 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-04-06 02:57:12,145 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.username, users.hashed_password, users.is_active, users.is_superuser, users.created_at, users.updated_at 
+backend-1  | FROM users 
+backend-1  | WHERE users.id = $1::INTEGER
+backend-1  | 2026-04-06 02:57:12,145 INFO sqlalchemy.engine.Engine [cached since 32.19s ago] (1,)
+backend-1  | 2026-04-06 02:57:12,147 INFO sqlalchemy.engine.Engine SELECT chat_sessions.id, chat_sessions.user_id, chat_sessions.title, chat_sessions.created_at, chat_sessions.updated_at 
+backend-1  | FROM chat_sessions 
+backend-1  | WHERE chat_sessions.id = $1::INTEGER AND chat_sessions.user_id = $2::INTEGER
+backend-1  | 2026-04-06 02:57:12,147 INFO sqlalchemy.engine.Engine [cached since 1.009s ago] (1, 1)
+backend-1  | 2026-04-06 02:57:12,149 INFO sqlalchemy.engine.Engine SELECT chat_sessions.id 
+backend-1  | FROM chat_sessions 
+backend-1  | WHERE chat_sessions.id = $1::INTEGER
+backend-1  | 2026-04-06 02:57:12,149 INFO sqlalchemy.engine.Engine [cached since 1.006s ago] (1,)
+backend-1  | 2026-04-06 02:57:12,153 INFO sqlalchemy.engine.Engine SELECT messages.id AS messages_id, messages.session_id AS messages_session_id, messages.role AS messages_role, messages.content AS messages_content, messages.sources AS messages_sources, messages.created_at AS messages_created_at 
+backend-1  | FROM messages 
+backend-1  | WHERE $1::INTEGER = messages.session_id ORDER BY messages.created_at
+backend-1  | 2026-04-06 02:57:12,153 INFO sqlalchemy.engine.Engine [cached since 1.003s ago] (1,)
+backend-1  | INFO:     172.18.0.5:55532 - "GET /api/v1/chat/sessions/1 HTTP/1.1" 200 OK
+backend-1  | 2026-04-06 02:57:12,160 INFO sqlalchemy.engine.Engine COMMIT
+backend-1  | 2026-04-06 02:57:12,316 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-04-06 02:57:12,317 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.username, users.hashed_password, users.is_active, users.is_superuser, users.created_at, users.updated_at 
+backend-1  | FROM users 
+backend-1  | WHERE users.id = $1::INTEGER
+backend-1  | 2026-04-06 02:57:12,317 INFO sqlalchemy.engine.Engine [cached since 32.36s ago] (1,)
+backend-1  | 2026-04-06 02:57:12,320 INFO sqlalchemy.engine.Engine SELECT chat_sessions.id, chat_sessions.user_id, chat_sessions.title, chat_sessions.created_at, chat_sessions.updated_at 
+backend-1  | FROM chat_sessions 
+backend-1  | WHERE chat_sessions.id = $1::INTEGER AND chat_sessions.user_id = $2::INTEGER
+backend-1  | 2026-04-06 02:57:12,320 INFO sqlalchemy.engine.Engine [cached since 1.182s ago] (1, 1)
+backend-1  | 2026-04-06 02:57:12,322 INFO sqlalchemy.engine.Engine SELECT chat_sessions.id 
+backend-1  | FROM chat_sessions 
+backend-1  | WHERE chat_sessions.id = $1::INTEGER
+backend-1  | 2026-04-06 02:57:12,322 INFO sqlalchemy.engine.Engine [cached since 1.179s ago] (1,)
+backend-1  | 2026-04-06 02:57:12,324 INFO sqlalchemy.engine.Engine SELECT messages.id AS messages_id, messages.session_id AS messages_session_id, messages.role AS messages_role, messages.content AS messages_content, messages.sources AS messages_sources, messages.created_at AS messages_created_at 
+backend-1  | FROM messages 
+backend-1  | WHERE $1::INTEGER = messages.session_id ORDER BY messages.created_at
+backend-1  | 2026-04-06 02:57:12,324 INFO sqlalchemy.engine.Engine [cached since 1.174s ago] (1,)
+backend-1  | INFO:     172.18.0.5:55544 - "GET /api/v1/chat/sessions/1 HTTP/1.1" 200 OK
+backend-1  | 2026-04-06 02:57:12,326 INFO sqlalchemy.engine.Engine COMMIT
+backend-1  | INFO:     127.0.0.1:34114 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:60770 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:49886 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:38060 - "GET /health HTTP/1.1" 200 OK
+backend-1  | 2026-04-06 02:57:53,675 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-04-06 02:57:53,676 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.username, users.hashed_password, users.is_active, users.is_superuser, users.created_at, users.updated_at 
+backend-1  | FROM users 
+backend-1  | WHERE users.id = $1::INTEGER
+backend-1  | 2026-04-06 02:57:53,676 INFO sqlalchemy.engine.Engine [cached since 73.73s ago] (1,)
+backend-1  | 2026-04-06 02:57:53,680 INFO sqlalchemy.engine.Engine INSERT INTO documents (user_id, filename, file_path, content_type, size_bytes, status, chunk_count, error_message, created_at, updated_at) VALUES ($1::INTEGER, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::INTEGER, $6::documentstatus, $7::INTEGER, $8::VARCHAR, $9::TIMESTAMP WITH TIME ZONE, $10::TIMESTAMP WITH TIME ZONE) RETURNING documents.id
+backend-1  | 2026-04-06 02:57:53,680 INFO sqlalchemy.engine.Engine [generated in 0.00031s] (1, 'thin157inwork@gmail.com.pdf', '1/e2f79319-d5c2-4346-b5be-94e7f218a908.pdf', 'application/pdf', 88375, 'PENDING', 0, None, datetime.datetime(2026, 4, 6, 2, 57, 53, 680037, tzinfo=datetime.timezone.utc), datetime.datetime(2026, 4, 6, 2, 57, 53, 680041, tzinfo=datetime.timezone.utc))
+backend-1  | 2026-04-06 02:57:53,748 INFO sqlalchemy.engine.Engine ROLLBACK
+backend-1  | INFO:     172.18.0.5:37604 - "POST /api/v1/documents/upload HTTP/1.1" 500 Internal Server Error
+backend-1  | ERROR:    Exception in ASGI application
+backend-1  | Traceback (most recent call last):
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 550, in _prepare_and_execute
+backend-1  |     self._rows = deque(await prepared_stmt.fetch(*parameters))
+backend-1  |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/prepared_stmt.py", line 177, in fetch
+backend-1  |     data = await self.__bind_execute(args, 0, timeout)
+backend-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/prepared_stmt.py", line 268, in __bind_execute
+backend-1  |     data, status, _ = await self.__do_execute(
+backend-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/prepared_stmt.py", line 257, in __do_execute
+backend-1  |     return await executor(protocol)
+backend-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "asyncpg/protocol/protocol.pyx", line 205, in bind_execute
+backend-1  | asyncpg.exceptions.InvalidTextRepresentationError: invalid input value for enum documentstatus: "PENDING"
+backend-1  | 
+backend-1  | The above exception was the direct cause of the following exception:
+backend-1  | 
+backend-1  | Traceback (most recent call last):
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+backend-1  |     self.dialect.do_execute(
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+backend-1  |     cursor.execute(statement, parameters)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 585, in execute
+backend-1  |     self._adapt_connection.await_(
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+backend-1  |     return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+backend-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+backend-1  |     value = await result
+backend-1  |             ^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 563, in _prepare_and_execute
+backend-1  |     self._handle_exception(error)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 513, in _handle_exception
+backend-1  |     self._adapt_connection._handle_exception(error)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 797, in _handle_exception
+backend-1  |     raise translated_error from error
+backend-1  | sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.Error: <class 'asyncpg.exceptions.InvalidTextRepresentationError'>: invalid input value for enum documentstatus: "PENDING"
+backend-1  | 
+backend-1  | The above exception was the direct cause of the following exception:
+backend-1  | 
+backend-1  | Traceback (most recent call last):
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 416, in run_asgi
+backend-1  |     result = await app(  # type: ignore[func-returns-value]
+backend-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+backend-1  |     return await self.app(scope, receive, send)
+backend-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/fastapi/applications.py", line 1160, in __call__
+backend-1  |     await super().__call__(scope, receive, send)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/starlette/applications.py", line 90, in __call__
+backend-1  |     await self.middleware_stack(scope, receive, send)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+backend-1  |     raise exc
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+backend-1  |     await self.app(scope, receive, _send)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/starlette/middleware/cors.py", line 96, in __call__
+backend-1  |     await self.simple_response(scope, receive, send, request_headers=headers)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+backend-1  |     await self.app(scope, receive, send)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+backend-1  |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+backend-1  |     raise exc
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+backend-1  |     await app(scope, receive, sender)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+backend-1  |     await self.app(scope, receive, send)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 660, in __call__
+backend-1  |     await self.middleware_stack(scope, receive, send)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 680, in app
+backend-1  |     await route.handle(scope, receive, send)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 276, in handle
+backend-1  |     await self.app(scope, receive, send)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 130, in app
+backend-1  |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+backend-1  |     raise exc
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+backend-1  |     await app(scope, receive, sender)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 116, in app
+backend-1  |     response = await f(request)
+backend-1  |                ^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 670, in app
+backend-1  |     raw_response = await run_endpoint_function(
+backend-1  |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 324, in run_endpoint_function
+backend-1  |     return await dependant.call(**values)
+backend-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/app/app/api/v1/documents.py", line 114, in upload_document
+backend-1  |     await db.flush()  # get doc.id before background task starts
+backend-1  |     ^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py", line 787, in flush
+backend-1  |     await greenlet_spawn(self.sync_session.flush, objects=objects)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 203, in greenlet_spawn
+backend-1  |     result = context.switch(value)
+backend-1  |              ^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4331, in flush
+backend-1  |     self._flush(objects)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4466, in _flush
+backend-1  |     with util.safe_reraise():
+backend-1  |          ^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 121, in __exit__
+backend-1  |     raise exc_value.with_traceback(exc_tb)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4427, in _flush
+backend-1  |     flush_context.execute()
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+backend-1  |     rec.execute(self)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+backend-1  |     util.preloaded.orm_persistence.save_obj(
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+backend-1  |     _emit_insert_statements(
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1233, in _emit_insert_statements
+backend-1  |     result = connection.execute(
+backend-1  |              ^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+backend-1  |     return meth(
+backend-1  |            ^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 527, in _execute_on_connection
+backend-1  |     return connection._execute_clauseelement(
+backend-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+backend-1  |     ret = self._execute_context(
+backend-1  |           ^^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+backend-1  |     return self._exec_single_context(
+backend-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+backend-1  |     self._handle_dbapi_exception(
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2363, in _handle_dbapi_exception
+backend-1  |     raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+backend-1  |     self.dialect.do_execute(
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+backend-1  |     cursor.execute(statement, parameters)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 585, in execute
+backend-1  |     self._adapt_connection.await_(
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+backend-1  |     return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+backend-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+backend-1  |     value = await result
+backend-1  |             ^^^^^^^^^^^^
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 563, in _prepare_and_execute
+backend-1  |     self._handle_exception(error)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 513, in _handle_exception
+backend-1  |     self._adapt_connection._handle_exception(error)
+backend-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 797, in _handle_exception
+backend-1  |     raise translated_error from error
+backend-1  | sqlalchemy.exc.DBAPIError: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InvalidTextRepresentationError'>: invalid input value for enum documentstatus: "PENDING"
+backend-1  | [SQL: INSERT INTO documents (user_id, filename, file_path, content_type, size_bytes, status, chunk_count, error_message, created_at, updated_at) VALUES ($1::INTEGER, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::INTEGER, $6::documentstatus, $7::INTEGER, $8::VARCHAR, $9::TIMESTAMP WITH TIME ZONE, $10::TIMESTAMP WITH TIME ZONE) RETURNING documents.id]
+backend-1  | [parameters: (1, 'thin157inwork@gmail.com.pdf', '1/e2f79319-d5c2-4346-b5be-94e7f218a908.pdf', 'application/pdf', 88375, 'PENDING', 0, None, datetime.datetime(2026, 4, 6, 2, 57, 53, 680037, tzinfo=datetime.timezone.utc), datetime.datetime(2026, 4, 6, 2, 57, 53, 680041, tzinfo=datetime.timezone.utc))]
+backend-1  | (Background on this error at: https://sqlalche.me/e/20/dbapi)
+backend-1  | INFO:     127.0.0.1:58470 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:48934 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:48612 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:56292 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:36104 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:53042 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:46370 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:59256 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:54456 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:51176 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:54258 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:36876 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:54810 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:39574 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:51676 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:40800 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:51630 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:58156 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:56454 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:58542 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:60360 - "GET /health HTTP/1.1" 200 OK
+backend-1  | INFO:     127.0.0.1:59526 - "GET /health HTTP/1.1" 200 OK
