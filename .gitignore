@@ -43,3 +43,11 @@ Thumbs.db
 secrets.json
 *.pem
 *.key
+
+# Logs
+backend_logs.txt
+doc_logs.txt
+error_logs.txt
+error_logs_utf8.txt
+logs.txt
+*.log
