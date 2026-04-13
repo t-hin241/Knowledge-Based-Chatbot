@@ -39,15 +39,16 @@ def get_groq_client() -> AsyncGroq:
 
 # ── Context assembly ──────────────────────────────────────────────────────────
 
-def _build_doc_context(chunks: list[dict]) -> str:
+def _build_doc_context(chunks: list[dict], doc_id_to_label: dict[int, str]) -> str:
     """Format retrieved doc chunks into a numbered context block."""
     if not chunks:
         return ""
     parts = ["## Knowledge base\n"]
     for i, chunk in enumerate(chunks, 1):
+        doc_id = chunk["document_id"]
+        label = doc_id_to_label.get(doc_id, f"Doc {doc_id}")
         parts.append(
-            f"[Doc {i} | document_id={chunk['document_id']} "
-            f"chunk={chunk['chunk_index']}]\n"
+            f"[{label} | chunk={chunk['chunk_index']}]\n"
             f"{chunk['text']}\n"
         )
     return "\n".join(parts)
@@ -83,7 +84,7 @@ def _build_system_prompt(
 Answer questions based on the context provided below.
 
 Rules:
-- Ground your answers in the provided context. Cite sources as [Doc N] or [Web N].
+- Ground your answers in the provided context. Cite sources as [Doc 1], [Doc 2], etc.
 - If the context is insufficient, say so — do not fabricate information.
 - Be concise and structured. Use markdown where it aids clarity.
 - Use conversation history to maintain continuity across follow-up questions.
@@ -107,6 +108,7 @@ async def stream_rag_response(
     user_id: int,
     history: list[dict],
     document_ids: list[int] | None = None,
+    doc_id_to_name: dict[int, str] | None = None,
     web_search_requested: bool = False,
 ) -> AsyncGenerator[dict[str, Any], None]:
     """
@@ -156,11 +158,29 @@ async def stream_rag_response(
             web_results = await search_web(user_message)
 
         # ── Step 4: Assemble sources for citation ─────────────────────────
+        # Create a mapping of doc_id to a stable "Doc N" label
+        # based on user's selection order if available.
+        unique_ids = list(dict.fromkeys([c["document_id"] for c in doc_chunks]))
+        # Use selection order from document_ids if provided, else just sequence
+        if document_ids:
+            # only use IDs that actually had results
+            ordered_ids = [did for did in document_ids if did in unique_ids]
+            # add any extras just in case
+            for uid in unique_ids:
+                if uid not in ordered_ids: ordered_ids.append(uid)
+        else:
+            ordered_ids = unique_ids
+
+        doc_id_to_label = {did: f"Doc {i+1}" for i, did in enumerate(ordered_ids)}
+
         sources: list[dict] = []
         for chunk in doc_chunks:
+            doc_id = chunk["document_id"]
             sources.append({
                 "type":        "document",
-                "document_id": chunk["document_id"],
+                "document_id": doc_id,
+                "filename":    doc_id_to_name.get(doc_id) if doc_id_to_name else f"Doc {doc_id}",
+                "label":       doc_id_to_label.get(doc_id, "Doc"),
                 "chunk_index": chunk["chunk_index"],
             })
         for result in web_results:
@@ -174,7 +194,7 @@ async def stream_rag_response(
         yield {"type": "sources", "sources": sources}
 
         # ── Step 5: Build context + messages list ─────────────────────────
-        doc_context   = _build_doc_context(doc_chunks)
+        doc_context   = _build_doc_context(doc_chunks, doc_id_to_label)
         web_context   = format_web_context(web_results)
         system_prompt = _build_system_prompt(doc_context, web_context, bool(doc_chunks))
 

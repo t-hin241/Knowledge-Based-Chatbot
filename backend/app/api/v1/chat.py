@@ -8,9 +8,11 @@ Key architecture decision on DB sessions:
 - The event_generator opens its OWN AsyncSessionLocal for saving the
   assistant message — this session lives for the duration of the stream.
 """
+import asyncio
 import json
 import logging
 from collections.abc import AsyncGenerator
+from datetime import datetime, timezone, date
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
@@ -75,6 +77,21 @@ async def _load_history(session_id: int, db: AsyncSession) -> list[dict]:
     ]
 
 
+async def _get_daily_request_count(user_id: int, db: AsyncSession) -> int:
+    """Count the number of USER messages sent by this user today (UTC)."""
+    today_start = datetime.combine(date.today(), datetime.min.time(), tzinfo=timezone.utc)
+    result = await db.execute(
+        select(Message.id)
+        .join(ChatSession)
+        .where(
+            ChatSession.user_id == user_id,
+            Message.role == MessageRole.USER,
+            Message.created_at >= today_start
+        )
+    )
+    return len(result.scalars().all())
+
+
 async def _save_assistant_message(
     session_id: int,
     content: str,
@@ -111,10 +128,27 @@ async def chat_stream(
     """
     Stream a chat response token-by-token via SSE.
 
-    The route function itself only does pre-stream DB work using the
-    injected `db`. Everything that happens after EventSourceResponse
-    is returned uses fresh sessions opened inside the generator.
+    The event_generator opens its own sessions for stream-saving logic.
     """
+    # ── Plan Enforcement ──────────────────────────────────────────────────────
+    is_pro = current_user.plan == "pro"
+    
+    # 1. Document limit check (Free only)
+    if not is_pro and body.document_ids and len(body.document_ids) > 2:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="PLAN_LIMIT_DOCS: Free tier allows maximum 2 documents."
+        )
+
+    # 2. Daily request limit check (Free only)
+    if not is_pro:
+        daily_count = await _get_daily_request_count(current_user.id, db)
+        if daily_count >= 15:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="PLAN_LIMIT_REQUESTS: You have reached the daily 15-message limit."
+            )
+
     # ── Pre-stream: all DB work while session is still alive ──────────────
     session = await _get_or_create_session(
         body.session_id, current_user.id, body.message, db
@@ -138,17 +172,31 @@ async def chat_stream(
     web_search      = body.web_search
     user_message_id = user_msg.id
 
+    # Capture filenames for the selected documents for informative source labeling
+    doc_id_to_name = {}
+    if document_ids:
+        from app.models.document import Document
+        # We can use the already open 'db' session here
+        res = await db.execute(select(Document.id, Document.filename).where(Document.id.in_(document_ids)))
+        doc_id_to_name = {row.id: row.filename for row in res}
+
     # ── Generator: runs AFTER route returns, db is closed ─────────────────
     async def event_generator() -> AsyncGenerator[dict, None]:
         full_text    = ""
         final_sources: list = []
 
         try:
+            # 3. Slow response delay (Free only)
+            if not is_pro:
+                # Artificial 'thinking' pause to differentiate Free tier speed
+                await asyncio.sleep(2)
+
             async for event in stream_rag_response(
                 user_message=message_text,
                 user_id=user_id,
                 history=history,
                 document_ids=document_ids,
+                doc_id_to_name=doc_id_to_name,
                 web_search_requested=web_search,
             ):
                 event_type = event.get("type")

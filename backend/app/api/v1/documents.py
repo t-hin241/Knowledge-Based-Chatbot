@@ -111,12 +111,13 @@ async def upload_document(
         status=DocumentStatus.PENDING,
     )
     db.add(doc)
-    await db.commit()  # commit before background task starts so it can find the doc in DB
+    # MUST commit before background task starts so the task's fresh session can see the record.
+    await db.commit()
     await db.refresh(doc)
 
     # ── Queue background processing ───────────────────────────────────────
-    # NEVER pass the request's db session to the background task —
-    # it closes when the response is sent. We open a fresh session inside.
+    # Background tasks run after the response is sent. By committing above,
+    # we ensure the document is visible in the DB when the task begins.
     background_tasks.add_task(_run_processing, doc.id)
 
     return DocumentResponse.model_validate(doc)

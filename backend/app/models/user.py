@@ -18,6 +18,7 @@ class User(Base):
     avatar_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
+    plan: Mapped[str] = mapped_column(String(20), default="free", nullable=False)
 
     # Store timestamps in UTC — always. Convert to local time in the frontend.
     created_at: Mapped[datetime] = mapped_column(

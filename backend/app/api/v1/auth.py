@@ -130,6 +130,9 @@ async def update_me(
                 detail="Incorrect current password",
             )
         current_user.hashed_password = hash_password(body.new_password)
+    
+    if body.plan:
+        current_user.plan = body.plan
 
     db.add(current_user)
     await db.flush()

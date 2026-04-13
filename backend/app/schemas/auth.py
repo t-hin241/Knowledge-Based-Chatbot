@@ -43,6 +43,7 @@ class UserResponse(BaseModel):
     username: str
     avatar_url: str | None = None
     is_active: bool
+    plan: str
     created_at: datetime
 
     model_config = {"from_attributes": True}  # allows User ORM → UserResponse
@@ -58,6 +59,7 @@ class UpdateMeRequest(BaseModel):
     username: str | None = Field(None, min_length=3, max_length=30)
     current_password: str | None = None
     new_password: str | None = Field(None, min_length=8, max_length=128)
+    plan: str | None = None
 
 
 class DayStats(BaseModel):
