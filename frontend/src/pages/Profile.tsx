@@ -12,6 +12,8 @@ export default function Profile() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly')
+  const [upgradingPlan, setUpgradingPlan] = useState(false)
 
   const getAvatarUrl = (path?: string) => {
     if (!path) return null
@@ -34,6 +36,18 @@ export default function Profile() {
       alert(err.response?.data?.detail || "Failed to upload avatar")
     } finally {
       setUploadingAvatar(false)
+    }
+  }
+
+  const handleUpgrade = async (plan: 'free' | 'pro') => {
+    setUpgradingPlan(true)
+    try {
+      const { data } = await authApi.updateMe({ plan })
+      setAuth(localStorage.getItem('talk2doc_token') || '', data.user)
+    } catch (err: any) {
+      alert(err.response?.data?.detail || "Failed to update plan")
+    } finally {
+      setUpgradingPlan(false)
     }
   }
 
@@ -144,7 +158,15 @@ export default function Profile() {
               )}
             </div>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight">Account Settings</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-semibold tracking-tight">Account Settings</h1>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider
+                  ${user?.plan === 'pro' 
+                    ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30' 
+                    : 'bg-zinc-800 text-zinc-500 border border-zinc-700'}`}>
+                  {user?.plan || 'Free'}
+                </span>
+              </div>
               <p className="text-sm text-zinc-500 font-mono">Manage your profile and track active usage</p>
             </div>
           </div>
@@ -156,7 +178,106 @@ export default function Profile() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Subscription Section */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-zinc-100">Subscription Plan</h2>
+              <p className="text-xs text-zinc-500 font-mono mt-0.5">Choose the tier that fits your workflow</p>
+            </div>
+            
+            {/* Billing toggle */}
+            <div className="bg-zinc-900 border border-zinc-800 p-1 rounded-xl flex">
+              <button 
+                onClick={() => setBillingCycle('monthly')}
+                className={`px-3 py-1 rounded-lg text-[10px] font-mono transition-all ${billingCycle === 'monthly' ? 'bg-zinc-800 text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                Monthly
+              </button>
+              <button 
+                onClick={() => setBillingCycle('yearly')}
+                className={`px-3 py-1 rounded-lg text-[10px] font-mono transition-all ${billingCycle === 'yearly' ? 'bg-zinc-800 text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                Yearly
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Free Plan */}
+            <div className={`p-6 rounded-3xl border transition-all ${user?.plan !== 'pro' ? 'bg-zinc-900/40 border-amber-500/30 ring-1 ring-amber-500/20' : 'bg-zinc-900/20 border-zinc-800'}`}>
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h3 className="text-lg font-bold text-zinc-100 italic">Free</h3>
+                  <div className="text-2xl font-semibold mt-2">0đ <span className="text-xs text-zinc-500 font-normal">/ perpetually</span></div>
+                </div>
+                {user?.plan !== 'pro' && <span className="text-[10px] font-bold text-amber-500 font-mono">Current Plan</span>}
+              </div>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-2 text-xs text-zinc-400">
+                  <svg className="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  10-15 requests per day
+                </li>
+                <li className="flex items-center gap-2 text-xs text-zinc-400">
+                  <svg className="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  Max 3 documents selected
+                </li>
+                <li className="flex items-center gap-2 text-xs text-zinc-500 line-through">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                  Instant response priority
+                </li>
+              </ul>
+            </div>
+
+            {/* Pro Plan */}
+            <div className={`p-6 rounded-3xl border transition-all relative overflow-hidden group ${user?.plan === 'pro' ? 'bg-zinc-900/40 border-amber-500/30 ring-1 ring-amber-500/20' : 'bg-zinc-900/20 border-zinc-800 hover:border-zinc-700'}`}>
+              <div className="absolute top-0 right-0 p-4">
+                <div className="bg-amber-500 text-zinc-900 text-[8px] font-black uppercase px-2 py-0.5 rounded tracking-tighter transform rotate-12 group-hover:rotate-0 transition-transform">Recommended</div>
+              </div>
+
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h3 className="text-lg font-bold text-amber-500 italic">Pro</h3>
+                  <div className="flex items-baseline gap-1 mt-2">
+                    <span className="text-2xl font-semibold">{billingCycle === 'monthly' ? '20k' : '200k'}</span>
+                    <span className="text-xs text-zinc-500 font-normal">/ {billingCycle === 'monthly' ? 'month' : 'year'}</span>
+                  </div>
+                </div>
+                {user?.plan === 'pro' && <span className="text-[10px] font-bold text-amber-500 font-mono">Active Tier</span>}
+              </div>
+              
+              <ul className="space-y-3 mb-8 text-xs text-zinc-300">
+                <li className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  Unlimited requests per day
+                </li>
+                <li className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  Unlimited documents selected
+                </li>
+                <li className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  No response delay
+                </li>
+              </ul>
+
+              {user?.plan !== 'pro' ? (
+                <button 
+                  onClick={() => handleUpgrade('pro')}
+                  disabled={upgradingPlan}
+                  className="w-full bg-amber-500 hover:bg-amber-400 text-zinc-900 text-xs font-bold py-3 rounded-2xl transition-all shadow-lg shadow-amber-500/10 active:scale-[0.98]">
+                  {upgradingPlan ? 'Processing...' : 'Upgrade Tier'}
+                </button>
+              ) : (
+                <button 
+                  onClick={() => handleUpgrade('free')}
+                  className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-400 text-[10px] font-mono py-2 rounded-2xl transition-all">
+                  Switch back to Free
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-6 border-t border-zinc-800/40">
           
           {/* Left Column: Stats Chart */}
           <div className="lg:col-span-2 space-y-6">

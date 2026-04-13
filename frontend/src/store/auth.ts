@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-interface User { id: number; email: string; username: string; avatar_url?: string }
+interface User { id: number; email: string; username: string; avatar_url?: string; plan: string }
 interface AuthState {
   token: string | null; user: User | null
   setAuth: (token: string, user: User) => void

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/auth'
+import { authApi } from '../api/auth'
 import { chatApi, Session } from '../api/chat'
 import { documentsApi, Document } from '../api/documents'
 import SessionList from '../components/SessionList'
@@ -14,7 +15,7 @@ const STATUS_DOT: Record<string, string> = {
 }
 
 export default function Dashboard() {
-  const { clearAuth, user } = useAuthStore()
+  const { clearAuth, user, token, setAuth } = useAuthStore()
   const navigate = useNavigate()
   const [sessions, setSessions]           = useState<Session[]>([])
   const [activeSession, setActiveSession] = useState<number | null>(null)
@@ -23,6 +24,15 @@ export default function Dashboard() {
   const [docs, setDocs]                   = useState<Document[]>([])
   const [selectedDocs, setSelectedDocs]   = useState<Document[]>([])
   const [sideTab, setSideTab]             = useState<'docs' | 'history'>('docs')
+
+  useEffect(() => {
+    // Rehydrate user if token exists but user object is missing (on refresh)
+    if (token && !user) {
+      authApi.me()
+        .then(r => setAuth(token, r.data.user))
+        .catch(() => { clearAuth(); navigate('/login') })
+    }
+  }, [token, user, setAuth, clearAuth, navigate])
 
   useEffect(() => {
     chatApi.listSessions().then(r => setSessions(r.data.sessions)).catch(() => {})
@@ -68,15 +78,41 @@ export default function Dashboard() {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-56 shrink-0 border-r border-zinc-800/60 flex flex-col bg-[#0c0c0e]">
+      <aside className="w-64 shrink-0 border-r border-zinc-800/60 flex flex-col bg-[#0b0b0d] shadow-2xl">
         {/* Logo */}
-        <div className="px-4 py-4 border-b border-zinc-800/60 flex items-center gap-2.5">
-          <div className="w-6 h-6 rounded-lg bg-amber-500/15 border border-amber-700/50
-                          flex items-center justify-center">
-            <span className="text-amber-400 font-mono text-[10px] font-medium">td</span>
+        <div className="px-6 py-8 flex flex-col items-center gap-3">
+          <div className="w-12 h-12 relative group">
+             <div className="absolute inset-0 bg-amber-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+             <img 
+               src="https://cdn-1.webcatalog.io/catalog/browsercat/browsercat-icon-filled-256.png?v=1741746785186" 
+               className="w-full h-full relative z-10 drop-shadow-lg scale-110" 
+               alt="Logo" 
+             />
           </div>
-          <span className="font-semibold text-sm tracking-wide text-zinc-100">Talk2Doc</span>
+          <div className="flex flex-col items-center">
+            <span className="font-bold text-lg tracking-tight text-white leading-none">Talk2Doc</span>
+            <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-[0.2em] mt-1.5">Knowledge Base</span>
+          </div>
         </div>
+
+        {/* User Info / Profile Link */}
+        <button onClick={() => navigate('/profile')}
+          className="reactive mx-4 mb-6 flex items-center gap-3 p-2.5 rounded-2xl bg-zinc-900/40 border border-zinc-800/50 hover:bg-zinc-800/50 transition-all group">
+          <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center overflow-hidden">
+            {user?.avatar_url ? (
+              <img src={`/api/v1/uploads/${user.avatar_url}`} className="w-full h-full object-cover" alt="" />
+            ) : (
+              <span className="text-amber-500 font-mono text-[10px] font-bold">{user?.username?.[0] || 'U'}</span>
+            )}
+          </div>
+          <div className="flex-1 text-left min-w-0">
+            <p className="text-xs font-bold text-zinc-200 truncate">{user?.username}</p>
+            <p className="text-[9px] text-zinc-500 font-mono uppercase tracking-wider">{user?.plan} plan</p>
+          </div>
+          <svg className="w-4 h-4 text-zinc-600 group-hover:text-amber-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
 
         {/* Tabs */}
         <div className="flex border-b border-zinc-800/60">

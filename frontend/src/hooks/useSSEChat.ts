@@ -43,7 +43,10 @@ export function useSSEChat(options: Options = {}) {
         body: JSON.stringify({ message: content, session_id: sessionId, document_ids: documentIds, web_search: webSearch }),
         signal: abortRef.current.signal,
       })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}))
+        throw new Error(errorData.detail || `HTTP ${res.status}`)
+      }
 
       const reader  = res.body!.getReader()
       const decoder = new TextDecoder()

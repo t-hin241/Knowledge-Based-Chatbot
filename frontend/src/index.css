@@ -4,20 +4,26 @@
 
 @layer base {
   :root {
-    --bg:         #09090b;
-    --surface:    #111113;
-    --surface-2:  #18181b;
-    --border:     #27272a;
-    --border-dim: #1c1c1f;
-    --text:       #fafafa;
-    --muted:      #71717a;
-    --accent:     #f59e0b;
-    --accent-dim: #78350f;
-    --green:      #22c55e;
-    --red:        #ef4444;
+    --bg:         #0a0a0c;
+    --surface:    #121215;
+    --surface-2:  #1a1a1e;
+    --border:     #2a2a2e;
+    --border-dim: #1d1d21;
+    --text:       #ffffff;
+    --text-dim:   #a1a1aa;
+    --muted:      #52525b;
+    --accent:     #fbbf24;
+    --accent-dim: #92400e;
+    --green:      #4ade80;
+    --red:        #f87171;
+    
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  * { box-sizing: border-box; }
+  * { 
+    box-sizing: border-box; 
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s, opacity 0.2s, transform 0.2s;
+  }
 
   html, body, #root {
     height: 100%;
@@ -25,7 +31,22 @@
     background: var(--bg);
     color: var(--text);
     font-family: 'Syne', sans-serif;
+    letter-spacing: -0.01em;
     -webkit-font-smoothing: antialiased;
+  }
+
+  button, a, input, [role="button"] {
+    outline: none;
+    transition: var(--transition);
+  }
+
+  .reactive:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+  }
+
+  .reactive:active {
+    transform: translateY(0) scale(0.98);
   }
 
   /* Custom scrollbar */

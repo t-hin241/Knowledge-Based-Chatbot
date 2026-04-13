@@ -11,10 +11,10 @@ interface Props {
   isLast?: boolean
 }
 
-function SourceTag({ source, index }: { source: Source; index: number }) {
+function SourceTag({ source }: { source: Source }) {
   const label = source.type === 'web'
     ? (source.title ?? source.url ?? 'Web').slice(0, 32)
-    : `Doc ${index + 1}`
+    : `${source.label ?? 'Doc'}: ${source.filename ?? 'Document'}`
   const dot = source.type === 'web' ? 'bg-blue-400' : 'bg-amber-400'
 
   if (source.type === 'web' && source.url) {
@@ -141,8 +141,22 @@ export default function MessageBubble({ message, onEdit, isLast = false }: Props
 
         {/* Source tags — only after streaming done */}
         {!isUser && !message.streaming && message.sources && message.sources.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 px-1">
-            {message.sources.map((s, i) => <SourceTag key={i} source={s} index={i} />)}
+          <div className="flex flex-col gap-2 px-1 mt-2">
+            <div className="flex items-center gap-2 opacity-50">
+               <div className="h-[1px] flex-1 bg-zinc-800" />
+               <span className="text-[9px] uppercase tracking-wider font-bold text-zinc-500 font-mono">Related Documents</span>
+               <div className="h-[1px] flex-1 bg-zinc-800" />
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {(() => {
+                const unique = new Map<string, Source>()
+                message.sources.forEach(s => {
+                  const key = s.type === 'web' ? (s.url || s.title) : String(s.document_id)
+                  if (key && !unique.has(key)) unique.set(key, s)
+                })
+                return Array.from(unique.values()).map((s, i) => <SourceTag key={i} source={s} />)
+              })()}
+            </div>
           </div>
         )}
 

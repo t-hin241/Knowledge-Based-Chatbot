@@ -1,5 +1,5 @@
 import api from './client'
-export interface Source { type: 'document'|'web'; document_id?: number; filename?: string; chunk_index?: number; url?: string; title?: string }
+export interface Source { type: 'document'|'web'; document_id?: number; filename?: string; label?: string; chunk_index?: number; url?: string; title?: string }
 export interface Message { id: number; session_id: number; role: 'user'|'assistant'|'system'; content: string; sources: Source[]|null; created_at: string }
 export interface Session { id: number; title: string; created_at: string; updated_at: string }
 export const chatApi = {
