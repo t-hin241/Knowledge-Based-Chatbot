@@ -10,6 +10,7 @@ interface Props {
   sessionData: Session | null
   initialMessages?: ChatMessage[]
   selectedDocs: Document[]
+  notificationsEnabled?: boolean
   onSessionCreated: (id: number, updatedSessions: Session[]) => void
 }
 
@@ -24,7 +25,7 @@ function fmtTime(iso: string) {
     : d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-export default function ChatWindow({ sessionId, sessionData, initialMessages = [], selectedDocs, onSessionCreated }: Props) {
+export default function ChatWindow({ sessionId, sessionData, initialMessages = [], selectedDocs, notificationsEnabled = false, onSessionCreated }: Props) {
   const navigate = useNavigate()
   const { messages, streaming, error, sendMessage, abort, reset, setMessages } = useSSEChat({
     onSessionCreated: async (id) => {
@@ -32,6 +33,25 @@ export default function ChatWindow({ sessionId, sessionData, initialMessages = [
       onSessionCreated(id, data.sessions)
     }
   })
+
+  const playChime = () => {
+    try {
+      const ctx = new AudioContext()
+      const gain = ctx.createGain()
+      gain.connect(ctx.destination)
+      gain.gain.setValueAtTime(0.18, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8)
+      // Two tones: base + harmonic
+      ;[523.25, 659.25].forEach((freq, i) => {
+        const osc = ctx.createOscillator()
+        osc.type = 'sine'
+        osc.frequency.value = freq
+        osc.connect(gain)
+        osc.start(ctx.currentTime + i * 0.08)
+        osc.stop(ctx.currentTime + 0.8)
+      })
+    } catch {}
+  }
   
   const [input, setInput]           = useState('')
   const [webSearch, setWebSearch] = useState(false)
@@ -58,6 +78,15 @@ export default function ChatWindow({ sessionId, sessionData, initialMessages = [
   }, [initialMessages, reset, setMessages])
   
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
+
+  // Play chime when response finishes streaming
+  const prevStreaming = useRef(false)
+  useEffect(() => {
+    if (prevStreaming.current && !streaming && notificationsEnabled && messages.length > 0) {
+      playChime()
+    }
+    prevStreaming.current = streaming
+  }, [streaming, notificationsEnabled, messages.length])
 
   const handleSend = async () => {
     const text = input.trim()

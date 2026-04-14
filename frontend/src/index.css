@@ -16,13 +16,27 @@
     --accent-dim: #92400e;
     --green:      #4ade80;
     --red:        #f87171;
-    
     --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  * { 
-    box-sizing: border-box; 
-    transition: background-color 0.2s, border-color 0.2s, color 0.2s, opacity 0.2s, transform 0.2s;
+  html[data-theme='light'] {
+    --bg:         #f4f4f5;
+    --surface:    #ffffff;
+    --surface-2:  #ebebed;
+    --border:     #d4d4d8;
+    --border-dim: #e4e4e7;
+    --text:       #09090b;
+    --text-dim:   #52525b;
+    --muted:      #a1a1aa;
+    --accent:     #d97706;
+    --accent-dim: #fef3c7;
+    --green:      #16a34a;
+    --red:        #dc2626;
+  }
+
+  * {
+    box-sizing: border-box;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, opacity 0.2s, transform 0.2s;
   }
 
   html, body, #root {
@@ -30,9 +44,15 @@
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font-family: 'Syne', sans-serif;
-    letter-spacing: -0.01em;
+    font-family: 'Syne', 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 450;
+    line-height: 1.6;
+    letter-spacing: -0.015em;
+    font-feature-settings: 'ss01', 'cv01', 'tnum', 'kern';
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   button, a, input, [role="button"] {
@@ -40,14 +60,8 @@
     transition: var(--transition);
   }
 
-  .reactive:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.1);
-  }
-
-  .reactive:active {
-    transform: translateY(0) scale(0.98);
-  }
+  .reactive:hover  { transform: translateY(-1px); filter: brightness(1.1); }
+  .reactive:active { transform: translateY(0) scale(0.98); }
 
   /* Custom scrollbar */
   ::-webkit-scrollbar       { width: 4px; height: 4px; }
@@ -59,60 +73,191 @@
   ::selection { background: var(--accent-dim); color: var(--text); }
 }
 
+/* ================================================================
+   COMPREHENSIVE LIGHT THEME OVERRIDES
+   Uses attribute-contains selectors to cover Tailwind utilities
+   and hardcoded dark hex values — no component changes needed.
+================================================================ */
+
+/* ── Structure ─────────────────────────────────────────────────── */
+html[data-theme='light'] body,
+html[data-theme='light'] #root,
+html[data-theme='light'] main,
+html[data-theme='light'] aside {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+/* ── Hardcoded very-dark hex backgrounds → white ───────────────── */
+html[data-theme='light'] [class*="bg-[#0"],
+html[data-theme='light'] [class*="bg-[#1"] {
+  background-color: #ffffff !important;
+}
+/* Inline style overrides for the sidebar and chat panels */
+html[data-theme='light'] aside,
+html[data-theme='light'] [style*="background: '#0"],
+html[data-theme='light'] [style*="background-color: '#0"] {
+  background-color: #f8f8fa !important;
+}
+
+/* ── zinc-950 ──────────────────────────────────────────────────── */
+html[data-theme='light'] [class*="bg-zinc-950"] {
+  background-color: #f4f4f5 !important;
+}
+
+/* ── zinc-900 ──────────────────────────────────────────────────── */
+html[data-theme='light'] [class*="bg-zinc-900"] {
+  background-color: #f0f0f2 !important;
+}
+
+/* ── zinc-800 ──────────────────────────────────────────────────── */
+html[data-theme='light'] [class*="bg-zinc-800"] {
+  background-color: #e4e4e7 !important;
+}
+
+/* ── Hover overrides (keeps interactive feel) ──────────────────── */
+html[data-theme='light'] [class*="hover:bg-zinc-950"]:hover {
+  background-color: #e4e4e7 !important;
+}
+html[data-theme='light'] [class*="hover:bg-zinc-900"]:hover,
+html[data-theme='light'] [class*="hover:bg-zinc-800"]:hover {
+  background-color: #d4d4d8 !important;
+}
+
+/* ── Text colors ───────────────────────────────────────────────── */
+html[data-theme='light'] .text-white               { color: #09090b !important; }
+html[data-theme='light'] [class*="text-zinc-100"]  { color: #09090b !important; }
+html[data-theme='light'] [class*="text-zinc-200"]  { color: #18181b !important; }
+html[data-theme='light'] [class*="text-zinc-300"]  { color: #3f3f46 !important; }
+html[data-theme='light'] [class*="text-zinc-400"]  { color: #52525b !important; }
+html[data-theme='light'] [class*="text-zinc-500"]  { color: #71717a !important; }
+html[data-theme='light'] [class*="text-zinc-600"]  { color: #a1a1aa !important; }
+html[data-theme='light'] [class*="text-zinc-700"]  { color: #c4c4cc !important; }
+
+/* ── Border colors ─────────────────────────────────────────────── */
+html[data-theme='light'] [class*="border-zinc-800"] { border-color: #d4d4d8 !important; }
+html[data-theme='light'] [class*="border-zinc-700"] { border-color: #c4c4cc !important; }
+
+/* ── Placeholder text ──────────────────────────────────────────── */
+html[data-theme='light'] ::placeholder {
+  color: #a1a1aa !important;
+  opacity: 1 !important;
+}
+
+/* ── Input / textarea tweaks ───────────────────────────────────── */
+html[data-theme='light'] input,
+html[data-theme='light'] textarea {
+  color: #09090b !important;
+}
+
+/* ── Chat message bubbles ──────────────────────────────────────── */
+html[data-theme='light'] [class*="bg-\[#111113\]"],
+html[data-theme='light'] [class*="bg-\[#121215\]"] {
+  background-color: #ffffff !important;
+  border-color: #e4e4e7 !important;
+}
+
+/* ── Shadows & glows softer in light mode ──────────────────────── */
+html[data-theme='light'] [class*="shadow-2xl"] {
+  box-shadow: 0 4px 24px -4px rgba(0,0,0,0.12) !important;
+}
+
+/* ── Radial gradient backgrounds on auth pages ─────────────────── */
+html[data-theme='light'] [style*="radial-gradient"] {
+  background-image: radial-gradient(circle at 50% 10%, rgba(217,119,6,0.07) 0%, transparent 50%) !important;
+}
+
+/* ── Prose / markdown in chat ──────────────────────────────────── */
+html[data-theme='light'] .prose-talk2doc {
+  color: #18181b;
+}
+html[data-theme='light'] .prose-talk2doc code {
+  background: #e4e4e7;
+  border-color: #d4d4d8;
+  color: #92400e;
+}
+html[data-theme='light'] .prose-talk2doc pre {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+}
+html[data-theme='light'] .prose-talk2doc pre code {
+  background: none;
+  color: #166534;
+}
+html[data-theme='light'] .prose-talk2doc blockquote {
+  color: #52525b;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────── */
+html[data-theme='light'] ::-webkit-scrollbar-track { background: #f4f4f5; }
+html[data-theme='light'] ::-webkit-scrollbar-thumb { background: #d4d4d8; }
+html[data-theme='light'] ::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }
+
+/* ================================================================
+   COMPONENT STYLES  (apply in both themes via CSS variables)
+================================================================ */
 @layer components {
-  /* Markdown prose inside chat bubbles */
   .prose-talk2doc {
     @apply text-sm leading-relaxed;
+    font-family: 'Inter', 'Syne', system-ui, sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.75;
+    letter-spacing: -0.005em;
     color: var(--text);
   }
   .prose-talk2doc p      { @apply mb-3 last:mb-0; }
   .prose-talk2doc h1,
   .prose-talk2doc h2,
-  .prose-talk2doc h3     { @apply font-semibold mb-2 mt-4 first:mt-0; color: var(--text); }
+  .prose-talk2doc h3     { @apply font-semibold mb-2 mt-4 first:mt-0; color: var(--text); letter-spacing: -0.03em; line-height: 1.3; }
   .prose-talk2doc h1     { @apply text-base; }
   .prose-talk2doc h2,
   .prose-talk2doc h3     { @apply text-sm; }
   .prose-talk2doc ul,
   .prose-talk2doc ol     { @apply pl-4 mb-3 space-y-1; }
-  .prose-talk2doc li     { @apply text-sm; }
+  .prose-talk2doc li     { @apply text-sm; line-height: 1.7; }
   .prose-talk2doc ul li  { list-style-type: disc; }
   .prose-talk2doc ol li  { list-style-type: decimal; }
   .prose-talk2doc code   {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
+    font-family: 'DM Mono', 'Fira Code', monospace;
+    font-size: 0.82rem;
     background: var(--surface-2);
     border: 1px solid var(--border);
-    padding: 0.1em 0.4em;
-    border-radius: 3px;
+    padding: 0.12em 0.45em;
+    border-radius: 4px;
     color: var(--accent);
+    letter-spacing: 0;
   }
   .prose-talk2doc pre {
+    font-family: 'DM Mono', monospace;
     background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    padding: 0.875rem 1.125rem;
     overflow-x: auto;
     margin-bottom: 0.75rem;
+    font-size: 0.82rem;
+    line-height: 1.65;
   }
   .prose-talk2doc pre code {
     background: none;
     border: none;
     padding: 0;
     color: #a3e635;
-    font-size: 0.78rem;
+    letter-spacing: 0;
   }
   .prose-talk2doc blockquote {
     border-left: 2px solid var(--accent);
-    padding-left: 0.75rem;
+    padding-left: 0.875rem;
     color: var(--muted);
     font-style: italic;
     margin-bottom: 0.75rem;
+    line-height: 1.7;
   }
-  .prose-talk2doc a { color: var(--accent); text-decoration: underline; }
-  .prose-talk2doc table { width: 100%; border-collapse: collapse; margin-bottom: 0.75rem; font-size: 0.78rem; }
-  .prose-talk2doc th, .prose-talk2doc td { border: 1px solid var(--border); padding: 0.4rem 0.6rem; text-align: left; }
-  .prose-talk2doc th { background: var(--surface-2); font-weight: 500; }
+  .prose-talk2doc a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  .prose-talk2doc table { width: 100%; border-collapse: collapse; margin-bottom: 0.75rem; font-size: 0.82rem; }
+  .prose-talk2doc th, .prose-talk2doc td { border: 1px solid var(--border); padding: 0.4rem 0.65rem; text-align: left; }
+  .prose-talk2doc th { background: var(--surface-2); font-weight: 600; letter-spacing: -0.01em; }
 
-  /* Glow effect on accent elements */
   .amber-glow { box-shadow: 0 0 20px rgba(245, 158, 11, 0.15); }
 }
+
